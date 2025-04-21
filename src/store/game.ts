@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-type SquareValue = "X" | "O" | null;
+export type SquareValue = "X" | "O" | null;
 
 type GameState = {
   squares: SquareValue[];

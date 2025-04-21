@@ -1,4 +1,9 @@
 import { useGameStore } from "../store/game";
+import {
+  calculateStatus,
+  calculateTurns,
+  calculateWinner,
+} from "../utils/game";
 import Square from "./Square";
 
 export default function Board() {
@@ -7,9 +12,12 @@ export default function Board() {
   const setSquares = useGameStore((state) => state.setSquares);
   const setXIsNext = useGameStore((state) => state.setXIsNext);
   const player = xIsNext ? "X" : "O"; // 現在のプレイヤーを決定
+  const winner = calculateWinner(squares); // 勝者を判定
+  const turns = calculateTurns(squares); // 残りのターン数を計算
+  const status = calculateStatus(winner, turns, player); // ゲームの状態を計算
 
   const handleClick = (index: number) => {
-    if (squares[index]) return; // もしすでにクリックされている場合は何もしない
+    if (squares[index] || winner) return; // もしすでにクリックされている場合もしくは勝者がいる場合は何もしない
 
     const nextSquares = squares.slice(); // 現在の状態をコピー
     nextSquares[index] = player; // クリックされたマスに"X"をセット
@@ -18,14 +26,17 @@ export default function Board() {
   };
 
   return (
-    <div className="board">
-      {squares.map((square, index) => (
-        <Square
-          key={index}
-          value={square}
-          onSquareClick={() => handleClick(index)}
-        />
-      ))}
-    </div>
+    <>
+      <div className="status">{status}</div>
+      <div className="board">
+        {squares.map((square, index) => (
+          <Square
+            key={index}
+            value={square}
+            onSquareClick={() => handleClick(index)}
+          />
+        ))}
+      </div>
+    </>
   );
 }
